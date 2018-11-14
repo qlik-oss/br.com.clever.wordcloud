@@ -70,10 +70,20 @@ const wordcloud = () => ({
   fill: null,
 
   go: function (words, layout, element, selectValuesFunc) {
+
+    var maxSize = d3.max(words, function(d) {
+      return d.value;
+    });
+    var minSize = d3.min(words, function(d) {
+      return d.value;
+    });
+    // var fontScale =(s)=>{return d3.scale.linear() // scale algo which is used to map the domain to the range
+    //   .domain([minSize, maxSize]) //set domain which will be mapped to the range values
+    //   .range([5, 40]);};
     const max = layout.qHyperCube.qMeasureInfo[0].qMax;
     const min = layout.qHyperCube.qMeasureInfo[0].qMin;
     const scale = d3.scale[layout.Scale]()
-      .domain([min, max])
+      .domain([minSize, maxSize])
       .rangeRound([layout.MinSize, layout.MaxSize]);
     const from = Math.max(-90, Math.min(90, +layout.RadStart));
     const to = Math.max(-90, Math.min(90, +layout.RadEnd));
@@ -90,6 +100,9 @@ const wordcloud = () => ({
         return scaleRotate(Math.round(Math.random() * (+layout.Orientations - 1)));
       })
       .fontSize(function (d) { return scale(+d.value); })
+      // .fontSize(function(d) {
+      //   return fontScale(d.size);
+      // })
       .on("end", words => draw(words, layout, element, selectValuesFunc, layout.ScaleColor, this.Id, this.Width, this.Height))
       .start();
   },
